@@ -1,0 +1,11 @@
+[package]
+name = "blonded-session"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+blonded-core = { path = "../blonded-core" }
+
+[lints]
+workspace = true

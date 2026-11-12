@@ -1,0 +1,10 @@
+[workspace]
+members = ["blonded-core", "blonded-session"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.0.1"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"

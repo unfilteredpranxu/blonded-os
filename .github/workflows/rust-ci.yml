@@ -1,0 +1,23 @@
+name: Rust scaffold checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Check formatting
+        working-directory: crates
+        run: cargo fmt --all -- --check
+      - name: Check lints
+        working-directory: crates
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Run tests
+        working-directory: crates
+        run: cargo test --workspace

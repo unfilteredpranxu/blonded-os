@@ -1,0 +1,23 @@
+# Proposed manifest, NOT yet parsed by Blonded OS.
+name = "Pixel Ocean"
+slug = "pixel-ocean"
+version = 1
+
+[palette]
+background = "#070e1a"
+foreground = "#d5e6f5"
+accent = "#5da8c8"
+
+[window]
+background_opacity_percent = 78
+window_opacity_percent = 100
+blur_strength_percent = 20
+corner_radius_px = 8
+
+[scene]
+kind = "procedural-pixel-waves"
+prefer_low_resolution = true
+animation_fps = 30
+
+[performance]
+profile = "balanced"

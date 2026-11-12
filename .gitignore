@@ -1,0 +1,16 @@
+/target/
+/crates/target/
+*.iso
+*.img
+*.qcow2
+*.raw
+.env
+.env.*
+*.swp
+*.swo
+*.key
+*.token
+*.secret
+.DS_Store
+/audits-raw/
+/host-reports-raw/
