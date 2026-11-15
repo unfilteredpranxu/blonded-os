@@ -12,18 +12,21 @@
 2. Before any new UI work, obtain the owner's desired look, layout, controls, effects, animation and any constraints from their description or reference. For non-UI engineering tasks, don't force unnecessary visual questions.
 3. ChatGPT chooses and *states explicitly* the specific AI/tool and available reasoning/effort mode for this task, based on its nature; avoid asserting unconfirmed subscription entitlements.
 4. ChatGPT writes one precise, copy-paste-ready prompt: repository, actual branch/current SHA where known, target paths, owner-approved UI requirements, explicit scope/exclusions, acceptance tests, hardware limits, commits, reporting format.
-5. The owner manually pastes that single prompt into selected Codex/Gemini tool; agent implements/tests within that bound, ideally on an isolated branch.
+5. The owner manually pastes that single prompt into the selected **local PC terminal agent: Codex CLI (`codex`) or Google Antigravity CLI (`agy`)**. The agent implements/tests within that bound, ideally on an isolated branch. Do not hand tasks to Codex Cloud, Gemini CLI, Jules, hosted Antigravity IDE or another coding agent unless the owner explicitly changes this choice.
 6. The owner returns the **actual** agent summary/diff/tests/logs. ChatGPT inspects evidence (using connected GitHub when possible), marks pass/fail/unknown, diagnoses issues and supplies **only the next appropriate prompt**, which may be a fix or test. Never advance on unverified claimed success.
 7. Do not give multiple future prompts, silently merge, move milestones or start redesigning subsequent screens before receiving evidence and owner approval. Keep all source and decisions in the project's GitHub repository.
 
-## AI and effort selection guidelines
+## AI and effort selection guidelines — LOCAL CLI ONLY
 
-- **ChatGPT GPT-6, High thinking:** default for system architecture, prompt writing and rigorous review; Extra High can be used for particularly difficult design/security tradeoffs if offered by the user's plan/interface.
-- **Codex Cloud:** primary implementation agent for Rust/OS changes; choose the highest available substantial reasoning/effort mode (typically High). Scope each task tightly and demand proof, not claimed success.
-- **Google AI Pro / Gemini:** use the strongest suitable available reasoning model for independent architecture/performance review, UI alternative analysis and verifying a Codex result; actual model and effort options may differ between Gemini/Jio products. Avoid two write agents on the same files.
-- **Gemini CLI/Jules:** use only when connected and available; choose isolated branches for second implementations, tests or audits. Don't infer Gemini AI Pro guarantees unlimited use.
-- **NotebookLM:** optional organized research for redacted docs and legitimate references.
-- **AI choice in EVERY coding handoff**: `AI:`, `Mode:`, `Task:`, `Copy-paste prompt:`, `Expected evidence:`. For the user's zero-code workflow, never require them to write source code manually.
+**Approved coding agents:** **Codex CLI running on the owner's Arch PC** and **Google Antigravity CLI (AGY, command `agy`) also running on the PC**. ChatGPT remains the architect, design interviewer, prompt writer and evidence reviewer, but is not a third on-device coding agent. Do not route implementation to Codex Cloud, Gemini CLI, Jules, Code Assist or the Antigravity graphical IDE.
+
+- **Implementation/default:** PC-local **Codex CLI**. Prefer the highest *actually offered* practical reasoning effort, normally **High** for substantial Rust/OS architecture and bug fixes; Medium where available for straightforward bounded edits. Model names and available modes must be checked in the installed CLI; never invent unavailable options.
+- **Independent audit / review / alternate approach:** PC-local **Antigravity CLI (`agy`)**. Choose the strongest *available* thinking/reasoning model for difficult review, and a faster available model for read-only searching, small documentation tasks or repetitive mechanical work. Discover model choices in the installed AGY interface/configuration; never guess a model ID, assume Google AI Pro includes unlimited AGY usage, or silently change the implementation agent.
+- **Workflow orchestration:** ChatGPT GPT-6 High when available for architecture, prompt writing and review. Each handoff states **AI**, **Mode**, **Task**, **Copy-paste prompt**, **Expected evidence**.
+- **One writer per branch:** Codex is the default writer. AGY runs read-only cross-checks after Codex completes; it may make an isolated change only when the owner explicitly chooses AGY for that step. No simultaneous edits to the same paths.
+- **Remote compute is optional infrastructure, not another coding agent:** GitHub Actions/CI can compile and test when the owner's 4 GB / HDD machine is too constrained; the instruction itself is still issued to a local CLI. Real target-hardware FPS/memory claims must be tested on the actual PC.
+- **Safety:** keep filesystem/disk/boot operations off limits, preserve the active Arch session, review shell commands, do not use no-sandbox/dangerously bypassed approval flags. Protect keys/tokens and raw host logs.
+- **CLI preflight:** run `command -v codex; codex --version; command -v agy; agy --help` on the host to confirm actual availability and available CLI options. Do not auto-install tools or require a GUI IDE.
 
 ## Current project facts and constraints
 
@@ -31,7 +34,7 @@ Repo: `unfilteredpranxu/blonded-os`. It is a Rust-first OS distribution based on
 
 **Milestone state:** M00 hardware/performance/recovery verification is active. Any request to design a future UI may be recorded as a specification before implementation, but do not ask Codex to implement UI or claim a bootable desktop until dependencies and stage approvals are satisfied.
 
-## Required Codex handoff report
+## Required CLI-agent handoff report
 
 - Repository and exact base/head commit SHA, branch and modified paths.
 - Screens or components changed, why they match the user's actual visual specifications; screenshots or captured UI artifacts where obtainable.
