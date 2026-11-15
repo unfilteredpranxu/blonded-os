@@ -2,6 +2,8 @@
 
 ## Required cross-agent startup (Codex CLI and AGY CLI)
 
+**Hands-off policy:** Read `docs/HANDS-OFF-CLI-AUTONOMY.md`. Owner wants no routine permission interruptions: execute scoped repository edits/builds/tests autonomously using protected sandbox modes; if an action is denied, skip and record `BLOCKED`. Never bypass sandboxes, install/remove packages or modify live host services/disks on your own.
+
 Read `docs/AI_TEAM_STATE.md` **first**, then this file, then `docs/AI-TEAM-PROTOCOL.md` only if this is a new task or handoff. Confirm current branch/HEAD and `git status --short`; only inspect assigned issue and task-relevant files. The shared checkpoint + Git history, not prior chat transcripts, are authoritative records of what the other AI did. Do not run broad repository re-audits or print full logs just to build context. After an assigned task, checkpoint the outcome with exact commits/tests and STOP for ChatGPT/owner review. Do not work on `main` assuming unmerged audit-branch docs exist there.
 
 ## Scope
