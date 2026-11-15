@@ -18,7 +18,7 @@ Do not confuse "use existing system" with "keep Hyprland forever." Hyprland is a
 
 M00 physical checks established Intel-accelerated GL 3.3, GLES 3.0 and EGL 1.5. Critical Docker/network userspace boot delays are identified. Remaining clean desktop idle/FPS/recovery gates are **not fulfilled**. This prevents claims of ready-to-use replacement desktop or deployment. However, owner now authorized starting **isolated Rust source development**.
 
-M01-A is the first actual implementation: **functional, tested Rust profile/settings engine** for future theme hot swapping, entirely within repo. No UI required yet, so no separate UI style question. This task MUST NOT run the custom compositor, modify an existing desktop, install packages, enable autostart, or rewrite login configuration. It must not pretend profile activation currently changes on-screen desktop.
+M01-A is the first actual implementation: **functional, tested original Rust window management core** for window registration/lifecycle, manual floating/move/resize, focus, snap/tiling and workspaces, entirely within repo. The user explicitly prioritized manual windowing before theme/configuration systems. No UI styling decision is required for this geometry/state core. Actual nested Wayland protocol integration is M01-B; do not claim core tests prove real desktop windows work. This task MUST NOT replace the current compositor, modify an existing desktop, install packages, enable autostart or rewrite login configuration.
 
 ## Platform constraints
 
