@@ -6,9 +6,9 @@ Blonded OS is an operating-system **distribution** engineering project, not a re
 ## Current milestone: M00 ONLY
 1. Read `docs/audits/M00-host-facts.md` and `codex/M00-NEXT-TASK.md`.
 2. Investigate hardware/rendering/memory feasibility and missing evidence. Do not start WM, compositor, installer, ISO or theme implementation yet.
-3. Codex Cloud environment is NOT the real physical target PC. Do not use cloud GPU/CPU info as physical-host evidence.
+3. **Approved coding execution is PC-local Codex CLI and AGY CLI only.** The target PC can supply genuine hardware evidence, but distinguish current host measurements from historical audit snapshots and any optional CI runners. Do not use Codex Cloud or Gemini CLI/Jules.
 4. Intel HD 2000 Vulkan acceleration is not established: report showed **llvmpipe CPU Vulkan**.
-5. Missing `glxinfo` and `eglinfo` are missing measurements, not proof hardware OpenGL is absent.
+5. **Newer real-host evidence confirms Intel HD Graphics 2000 accelerated OpenGL 3.3, GLES 3.0 and EGL 1.5.** See `docs/audits/M00-C-graphics-evidence-2026-11-13.md`. Custom compositor frame timing, RAM and blur remain unknown.
 6. Produce VERIFIED / INFERRED / UNKNOWN findings. Finish with evidence and stop. Do not autonomously advance milestones.
 
 ## Permanent constraints
@@ -24,4 +24,4 @@ Blonded OS is an operating-system **distribution** engineering project, not a re
 - New features need tests, performance checks, error recovery and accessibility considerations.
 
 ## Workflow
-One Codex assignment at a time; ask for physical-host evidence before deciding the next milestone. No claims of boot success, release readiness, 60 FPS or RAM compliance without reproducible physical evidence.
+Follow `docs/AI-DESIGN-AND-IMPLEMENTATION-WORKFLOW.md`: ask owner for each new UI design first, send exactly one prompt to PC-local Codex CLI or AGY CLI, state model/mode based on actual availability, inspect returned evidence, then select only the next task. No Codex Cloud, Gemini CLI, Jules or simultaneous writers. One assignment at a time; ask for physical-host evidence before deciding the next milestone. No claims of boot success, release readiness, 60 FPS or RAM compliance without reproducible physical evidence.
