@@ -22,11 +22,12 @@ Profiles may be macOS-inspired (independent implementation, no copyrighted propr
 | Shortcut | Action |
 |---|---|
 | **Super + T** (Windows key + T) | Toggle the **Theme Shell**: searchable profile gallery, live preview and quick apply, profile management, import/export |
-| **Super + W** (Windows key + W) | Toggle **Wallpaper & Appearance Studio**: wallpaper choice/motion, color sync, global/per-window opacity, blur, motion presets, panel layout and effects |
+| **Super + W** (Windows key + W) | Toggle **Wallpaper & Desktop Studio**: moving wallpapers, palette sync, screen layout, bars, docks and desktop widgets |
+| **Super + O** (Windows key + O) | Toggle **Window Effects Studio**: window opacity, background transparency, blur, border, shadows, tint and per-app window appearance rules |
 | Escape | Close the open shell overlay without discarding the last applied theme |
 | Keyboard navigation / Enter | Select, preview and apply a profile; fully usable without mouse |
 
-Shortcuts must be registered in Blonded OS's **own** session dispatcher rather than relying on current Hyprland bindings; conflicts must be diagnosed and remappable by the user. A user can configure additional shortcuts later. Both toggles are intended to be low-latency, not open a new heavyweight process for each invocation.
+Shortcuts must be registered in Blonded OS's **own** session dispatcher rather than relying on current Hyprland bindings; conflicts must be diagnosed and remappable by the user. A user can configure additional shortcuts later. All three toggles are intended to be low-latency, not open a new heavyweight process for each invocation.
 
 ### Theme Shell
 - Presents visual previews that are **precomputed/cached** or efficient live previews where hardware permits; no simultaneous decoding/running of all full wallpaper scenes.
@@ -36,12 +37,24 @@ Shortcuts must be registered in Blonded OS's **own** session dispatcher rather t
 - A failed theme or graphics effect must automatically restore the previous known-good profile.
 - Presets may optionally specify per-monitor layouts and ultrawide/portrait adaptations without breaking a 1366×768 display.
 
-### Wallpaper & Appearance Studio
+### Wallpaper & Desktop Studio (Super+W)
 - Wallpaper library with static, procedural, low-res sprite, animated and user-provided sources.
 - Wallpaper and UI colors may synchronize automatically, with rate-limited representative color sampling to prevent flicker; users may override colors.
-- Per-profile settings and global fallbacks for panel position, dock, widget arrangement, window materials and animation.
+- Per-profile settings and global fallbacks for panel position, dock, widget arrangement and desktop layout.
 - Live before/after, custom themes, legibility checker, reduced-motion mode and reset controls.
+- Window materials are controlled in **Super+O**; Super+W may show matching palette information but must not duplicate those controls.
 - Opening Studio does **not** permanently start a second renderer or a web view.
+
+### Window Effects Studio (Super+O)
+- A dedicated **Rust-native**, keyboard-accessible overlay for window appearance, reusable in every desktop profile.
+- Scope selector: **All windows**, **Focused window**, **Selected application**, or **Current theme**; explain whether changes persist for the window, application or profile. App overrides take precedence over theme defaults, with a clear reset action.
+- Independent sliders/toggles: **whole-window opacity** (including text), **window-background opacity** (only where supported by app/compositor), **background blur** strength/radius, **blur quality**, tint/accent, saturation/contrast, border thickness/color, corner radius and shadow strength/spread. Provide optional focused/unfocused settings.
+- Optional window motion settings: open/close/minimize speed, easing and animation style. Animation-heavy presets must be measured and offer a reduced-effects fallback on Intel HD 2000.
+- Controls update an efficient live preview immediately; **Apply** persists, **Cancel/Escape** reverts uncommitted changes, **Reset** restores theme defaults. No application restart or extra resident desktop process merely to open this panel.
+- Preserve text readability and accessibility: warn when opacity or blur harms contrast; expose an opacity floor for essential interactive surfaces and a reduced-motion mode.
+- Safety: clamp ranges, validate the renderer feature set, degrade gracefully if blur or background-only translucency is unsupported, revert if a render effect fails; never freeze/crash the desktop because a theme requests excessive effects.
+- Whole-window transparency is distinct from background-only transparency. **Do not promise that the compositor can change the internal UI backgrounds of every third-party application.** Maintain clear supported/unsupported indicators and per-app override rules.
+- Theme switching should apply window material defaults automatically while preserving user-defined per-app overrides; the studio reflects current effective values and their source (global/theme/app/window).
 
 ## 3. Example complete profiles (design examples only)
 
@@ -72,7 +85,7 @@ The architecture is provisional until Intel HD Graphics 2000 GPU/renderer and me
 - `blonded-shell`: lean top/bottom/side panel surfaces, dock, launcher, widgets, notifications, quick settings and overlays.
 - `blonded-theme`: schema/versioned manifests, profile validation, loaded-state management, hot reload and atomic rollback.
 - `blonded-scene`: GPU-assisted or CPU-fallback wallpaper and procedural animation scheduling.
-- `blonded-appearance`: configuration UI surfaced by Super+T and Super+W; **not a browser/Electron runtime**.
+- `blonded-appearance`: shared configuration UI surfaced by Super+T, Super+W and Super+O; **not a browser/Electron runtime**.
 - `blonded-bridge`: bounded IPC/events for workspace, audio, wallpaper palette and service status; protect privacy and avoid polling storms.
 
 Prefer one event-driven shell process with shared state and bounded resources over starting a separate daemon per widget or per theme. Build only necessary services and wake primarily on actual changes. Reuse textures and fonts, apply bounded caches, avoid inactive scene rendering; handle multi-monitor configs without per-frame app process restarts.
@@ -133,11 +146,12 @@ This is a **design proposal**. Implementers must validate all fields, paths, ass
 ## 7. Future validation checklist
 
 1. Super+T overlay opens with a keyboard-only navigable profile gallery, then closes, without persistent excess CPU/worker usage.
-2. Super+W exposes current wallpaper, live scene controls, panel layout and window materials; Esc restores previous values when editing a preview.
-3. Mac-like profile displays top bar + bottom dock while feature-rich profile displays a different arrangement and widget set; only one active profile's render surfaces remain.
-4. Switching themes retains all windows, workspaces, file operations, notes and media playback.
-5. On failure, theme reverts without logging out or requiring desktop recovery.
-6. Native test on Intel HD 2000 verifies blur/opacity/animation fallback and frame pacing at 1366×768.
-7. Three reproducible clean-logins pass the <=500 MiB total-system steady-idle protocol or the release gate stays blocked.
+2. Super+W exposes current wallpaper, live scene controls, bar/dock layout and desktop widgets; Esc restores previous values when editing a preview.
+3. Super+O opens Window Effects Studio with separate whole-window/background opacity, blur, border, tint and shadow controls; per-app overrides and preview rollback are tested.
+4. Mac-like profile displays top bar + bottom dock while feature-rich profile displays a different arrangement and widget set; only one active profile's render surfaces remain.
+5. Switching themes retains all windows, workspaces, file operations, notes and media playback.
+6. On failure, theme reverts without logging out or requiring desktop recovery.
+7. Native test on Intel HD 2000 verifies blur/opacity/animation fallback and frame pacing at 1366×768.
+8. Three reproducible clean-logins pass the <=500 MiB total-system steady-idle protocol or the release gate stays blocked.
 
 **Milestone boundary:** All of this is a future product requirement, not permission to implement it in M00. The existing OS audit and its outstanding recovery/performance issues remain active.
