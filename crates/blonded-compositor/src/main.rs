@@ -80,7 +80,10 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
             std::process::id()
         ))
         .with_inner_size(::winit::dpi::LogicalSize::new(960., 640.))
-        .with_min_inner_size(::winit::dpi::LogicalSize::new(320., 240.));
+        .with_min_inner_size(::winit::dpi::LogicalSize::new(
+            policy::MIN_OUTPUT.0,
+            policy::MIN_OUTPUT.1,
+        ));
     let (backend, winit) = winit::init_from_attributes_with_gl_attr::<GlesRenderer>(
         attributes,
         GlAttributes {
@@ -97,8 +100,8 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
         display.handle(),
         event_loop.handle(),
         Box::new(move || redraw_backend.borrow().window().request_redraw()),
-        size.w as u32,
-        size.h as u32,
+        size.w,
+        size.h,
     )?;
     let output = Output::new(
         "blonded-nested".into(),
@@ -112,7 +115,11 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
     let _global = output.create_global::<State>(&display.handle());
     // Protocol nominal refresh only, not a measured host refresh/FPS claim.
     let mode = Mode {
-        size,
+        size: (
+            state.policy.wm.config().screen.width() as i32,
+            state.policy.wm.config().screen.height() as i32,
+        )
+            .into(),
         refresh: 60_000,
     };
     output.change_current_state(
@@ -171,11 +178,7 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
     let mut capture = options.capture;
     event_loop.handle().insert_source(winit, move |event, _, state| {
         match event {
-            WinitEvent::Resized { size, .. } if size.w >= 320 && size.h >= 240 => {
-                if let Err(error) = state.policy.configure(size.w as u32, size.h as u32) { state.fail(error); return; }
-                output.change_current_state(Some(Mode { size, refresh: 60_000 }), None, None, None);
-                state.sync_policy();
-            },
+            WinitEvent::Resized { size, .. } => state.resize_output(size, &output),
             WinitEvent::Input(event) => state.process_input(event),
             WinitEvent::Focus(focus) => {
                 state.host_focus = focus;
@@ -185,9 +188,14 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
                 state.sync_policy();
             },
             WinitEvent::Redraw => {
+                // Reconcile the actual target as well as resize notifications;
+                // never render/read back against an old output/WM size.
+                let actual_size = backend.borrow().window_size();
+                state.resize_output(actual_size, &output);
                 let mut backend = backend.borrow_mut();
                 if let Some(timer) = state.frame_timer.take() { state.handle.remove(timer); }
                 state.frame_scheduled = false;
+                if state.policy.output_suspended { return; }
                 state.last_frame = std::time::Instant::now();
                 state.flush_pointer();
                 if state.policy.dragging() {
@@ -248,7 +256,6 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
                 if let Err(error) = result { state.fail(error); }
             },
             WinitEvent::CloseRequested => state.running = false,
-            _ => {},
         }
     })?;
     eprintln!(

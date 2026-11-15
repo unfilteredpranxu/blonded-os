@@ -1,5 +1,31 @@
 # Blonded nested compositor — M01-B
 
+M01-B-R1 update (2026-11-15): keyboard geometry arithmetic now saturates moves
+and uses clamped 64-bit sums for dimensions before passing requests to the WM.
+Output resizing accepts every size satisfying the current WM minimum and gaps
+(120×96 with this configuration), including small and unusual aspect ratios.
+An impossible/zero size suspends drawing and input while retaining the last valid
+WM/output snapshot; a later valid size resumes presentation. Redraw also checks
+the actual backend size before rendering/readback. Obsolete output modes are
+retired and the current mode is preferred. Initial impossible sizes start
+dormant. Minimum host-window hints now reflect the actual 120×96 boundary.
+
+R1 validation: fmt, Clippy, debug build and **33 scoped tests** passed (10 adapter,
+23 WM). Seven new tests cover coordinate/dimension extremes, small/asymmetric
+outputs, startup suspension, atomic rejection/recovery and Smithay output/WM
+consistency. The existing real-client smoke passed again with clean socket and
+resource cleanup. Live small-window resizing and physical pointer dragging are
+not verified; resize boundary coverage is through source-level integration tests.
+An actual Hyprland query and window-only screen capture now verify a mapped native
+Wayland window displaying the clients. Physical input hardware remains unverified.
+
+R1 rendering still uses llvmpipe. The current protected process has no `/dev/dri`,
+although sysfs registers the Intel i915 device/render node. Standalone GLX and EGL
+Wayland/X11/surfaceless also choose llvmpipe; GBM cannot initialize. See
+[`M01-B-R1-GPU-diagnostics.md`](../../docs/audits/M01-B-R1-GPU-diagnostics.md)
+for exact errors, ruled-out causes and the single next read-only comparison.
+No driver, host configuration, permission or sandbox changes were made.
+
 A manually launched Rust Wayland compositor inside the current Wayland session.
 Smithay 0.7.0 supplies protocol/rendering machinery; **blonded-wm** controls
 internal windows. The outer host window remains an ordinary Hyprland client.

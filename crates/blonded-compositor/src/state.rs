@@ -15,7 +15,7 @@ use smithay::{
             DisplayHandle,
         },
     },
-    utils::{IsAlive, Logical, Point, SERIAL_COUNTER},
+    utils::{IsAlive, Logical, Physical, Point, Size, SERIAL_COUNTER},
     wayland::{
         compositor::{CompositorClientState, CompositorState},
         output::OutputManagerState,
@@ -25,7 +25,7 @@ use smithay::{
     },
 };
 
-use crate::policy::Policy;
+use crate::policy::{OutputChange, Policy};
 
 pub struct Managed {
     pub window: Window,
@@ -68,8 +68,8 @@ impl State {
         display_handle: DisplayHandle,
         handle: LoopHandle<'static, Self>,
         request_redraw: Box<dyn Fn()>,
-        width: u32,
-        height: u32,
+        width: i32,
+        height: i32,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let compositor_state = CompositorState::new::<Self>(&display_handle);
         let xdg_shell_state = XdgShellState::new::<Self>(&display_handle);
@@ -91,7 +91,7 @@ impl State {
             seat,
             space: Space::default(),
             managed: Vec::new(),
-            policy: Policy::new(width, height)?,
+            policy: Policy::for_output(width, height)?,
             running: true,
             error: None,
             host_focus: true,
@@ -118,7 +118,7 @@ impl State {
 
     /// One pending frame timer, no idle redraw loop and no permanent timer.
     pub fn schedule_frame(&mut self) {
-        if self.frame_scheduled {
+        if self.frame_scheduled || self.policy.output_suspended {
             return;
         }
         self.frame_scheduled = true;
@@ -132,6 +132,39 @@ impl State {
             }) {
             Ok(token) => self.frame_timer = Some(token),
             Err(error) => self.fail(error),
+        }
+    }
+
+    pub fn resize_output(&mut self, size: Size<i32, Physical>, output: &smithay::output::Output) {
+        let was_suspended = self.policy.output_suspended;
+        match self.policy.adapt_output(size.w, size.h) {
+            OutputChange::Unchanged => {}
+            OutputChange::Applied => {
+                let mode = smithay::output::Mode {
+                    size,
+                    refresh: 60_000,
+                };
+                let previous_mode = output.current_mode();
+                output.set_preferred(mode);
+                output.change_current_state(Some(mode), None, None, None);
+                // Nested outputs have one actual mode. Retire resize history
+                // instead of retaining one allocation per distinct host size.
+                if let Some(previous) = previous_mode.filter(|previous| *previous != mode) {
+                    output.delete_mode(previous);
+                }
+                eprintln!("OUTPUT active={}x{}", size.w, size.h);
+                self.sync_policy();
+            }
+            OutputChange::Suspended(error) => {
+                if !was_suspended {
+                    self.lose_input_focus();
+                    self.sync_policy();
+                    eprintln!(
+                        "OUTPUT suspended actual={}x{} reason={error}",
+                        size.w, size.h
+                    );
+                }
+            }
         }
     }
 
@@ -175,7 +208,9 @@ impl State {
                 .window(id)
                 .expect("stacking invariant")
                 .geometry();
-            let active = self.host_focus && self.policy.wm.focused() == Some(id);
+            let active = self.host_focus
+                && !self.policy.output_suspended
+                && self.policy.wm.focused() == Some(id);
             self.space
                 .map_element(entry.window.clone(), (geometry.x(), geometry.y()), false);
             self.space.raise_element(&entry.window, false);
@@ -195,7 +230,10 @@ impl State {
             .managed
             .iter()
             .find(|entry| {
-                self.host_focus && entry.id.is_some() && entry.id == self.policy.wm.focused()
+                self.host_focus
+                    && !self.policy.output_suspended
+                    && entry.id.is_some()
+                    && entry.id == self.policy.wm.focused()
             })
             .and_then(|entry| entry.window.toplevel())
             .map(|top| top.wl_surface().clone());
@@ -203,7 +241,7 @@ impl State {
         if keyboard.current_focus() != focus {
             keyboard.set_focus(self, focus, SERIAL_COUNTER.next_serial());
         }
-        if self.host_focus && !self.policy.dragging() {
+        if self.host_focus && !self.policy.output_suspended && !self.policy.dragging() {
             self.pending_pointer = Some(self.start.elapsed().as_millis() as u32);
         }
         self.schedule_frame();
@@ -262,5 +300,77 @@ impl ClientData for ClientState {
     }
     fn disconnected(&self, _: ClientId, _: DisconnectReason) {
         eprintln!("CLIENT disconnected");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use smithay::{
+        output::{Mode, Output, PhysicalProperties, Subpixel},
+        reexports::{calloop::EventLoop, wayland_server::Display},
+    };
+
+    #[test]
+    fn output_wm_and_presentation_gate_stay_consistent_across_resize() {
+        let event_loop = EventLoop::<State>::try_new().unwrap();
+        let display = Display::<State>::new().unwrap();
+        let mut state = State::new(
+            display.handle(),
+            event_loop.handle(),
+            Box::new(|| {}),
+            960,
+            640,
+        )
+        .unwrap();
+        let output = Output::new(
+            "resize-test".into(),
+            PhysicalProperties {
+                size: (0, 0).into(),
+                subpixel: Subpixel::Unknown,
+                make: "Test".into(),
+                model: "Test".into(),
+            },
+        );
+        output.change_current_state(
+            Some(Mode {
+                size: (960, 640).into(),
+                refresh: 60_000,
+            }),
+            None,
+            None,
+            None,
+        );
+        state.space.map_output(&output, (0, 0));
+        for (width, height) in [(240, 160), (120, 96), (120, 2000), (2000, 96)] {
+            state.resize_output((width, height).into(), &output);
+            assert!(!state.policy.output_suspended);
+            assert_eq!(output.current_mode().unwrap().size, (width, height).into());
+            assert_eq!(output.preferred_mode(), output.current_mode());
+            assert_eq!(output.modes(), vec![output.current_mode().unwrap()]);
+            assert_eq!(
+                state.space.output_geometry(&output).unwrap().size,
+                (width, height).into()
+            );
+            let screen = state.policy.wm.config().screen;
+            assert_eq!(
+                (screen.width(), screen.height()),
+                (width as u32, height as u32)
+            );
+            let before = state.policy.wm.clone();
+            // Smithay's Size type itself rejects negative dimensions; the
+            // signed adapter boundary is covered separately in policy tests.
+            for invalid in [(0, 0), (width, 95), (119, height)] {
+                state.resize_output(invalid.into(), &output);
+                assert!(state.policy.output_suspended);
+                assert!(state.running);
+                assert!(state.error.is_none());
+                assert_eq!(state.policy.wm, before);
+                assert_eq!(output.current_mode().unwrap().size, (width, height).into());
+            }
+            state.resize_output((width, height).into(), &output);
+            assert!(!state.policy.output_suspended);
+            state.policy.wm.check_invariants().unwrap();
+        }
     }
 }

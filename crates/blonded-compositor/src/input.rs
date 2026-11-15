@@ -1,6 +1,5 @@
 // Input protocol dispatch adapted from Smithay smallvil; Blonded owns policy/actions.
 use crate::{policy::DragKind, state::State};
-use blonded_wm::{Command, Size};
 use smithay::{
     backend::input::{
         AbsolutePositionEvent, Axis, AxisSource, ButtonState, Event, InputBackend, InputEvent,
@@ -107,23 +106,7 @@ impl State {
             }
             Action::Geometry(dx, dy, resize) => {
                 if let Some(id) = self.policy.wm.focused() {
-                    let geometry = self.policy.wm.window(id)?.geometry();
-                    let command = if resize {
-                        Command::Resize {
-                            id,
-                            size: Size::new(
-                                (geometry.width() as i32 + dx).max(1) as u32,
-                                (geometry.height() as i32 + dy).max(1) as u32,
-                            )?,
-                        }
-                    } else {
-                        Command::Move {
-                            id,
-                            x: geometry.x() + dx,
-                            y: geometry.y() + dy,
-                        }
-                    };
-                    self.policy.wm.dispatch(command)?;
+                    self.policy.adjust_geometry(id, dx, dy, resize)?;
                     eprintln!(
                         "KEY geometry id={} {:?}",
                         id.0,
@@ -138,7 +121,7 @@ impl State {
     }
 
     pub fn process_input<I: InputBackend>(&mut self, event: InputEvent<I>) {
-        if !self.host_focus {
+        if !self.host_focus || self.policy.output_suspended {
             return;
         }
         match event {
