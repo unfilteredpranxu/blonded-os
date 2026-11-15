@@ -23,6 +23,8 @@ No Codex Cloud, Gemini CLI, Jules, or extra coding agents. Do not assume account
 
 ## Minimal-token startup (per assigned task)
 
+**Unattended coding preference:** follow `docs/HANDS-OFF-CLI-AUTONOMY.md`. For defined code-edit/test tasks, no repeated permission requests, routine confirmations or needless questions; preserve sandbox restrictions and report blocked high-risk work instead of trying privilege bypasses. Neither agent may interpret "hands-off" as approval to modify boot, packages, private files, services or real disks.
+
 1. Read only `AGENTS.md` and `docs/AI_TEAM_STATE.md` (~short permanent + short current).
 2. Verify `git branch --show-current`, `git rev-parse --short HEAD`, `git status --short`, and whether an owner or task is already recorded.
 3. Read assigned issue plus **only** task-relevant source/spec and `git diff` for changed paths. Do not recursively dump the repo, re-read entire chat, or launch broad searches.
