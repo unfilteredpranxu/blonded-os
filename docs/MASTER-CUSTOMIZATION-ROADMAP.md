@@ -108,34 +108,28 @@
 
 Each stage has formal acceptance tests, explicit risks, specific modified files, a branch per change and an owner review. Never skip to the next stage because a model claims success.
 
-## AI engineering with existing subscriptions
+## AI engineering with existing subscriptions — PC LOCAL CLI ONLY
 
-**GitHub is the canonical source of truth** for code and decisions. The user's current available subscriptions are ChatGPT Plus and Google AI Pro via Jio. Plan uses account-entitled features, not a guarantee of unlimited agent usage.
+**Canonical source:** GitHub repository `unfilteredpranxu/blonded-os`. User has ChatGPT Plus and Google AI Pro via Jio, but available models, login authorization, limits and billing for either CLI must be verified in the actual tools.
 
-### ChatGPT Plus / Codex Cloud (primary implementing agent)
-- ChatGPT: system architect, requirements, performance/privacy and safety reviewer, Codex task writer, PR diff reviewer and evidence gatekeeper.
-- Codex Cloud: one bounded feature/fix task on an isolated branch; tests/builds, exact commits and reproducible evidence before handing back. Run heavy Rust builds on remote hosted machines when practical; the physical i3 machine is the acceptance/test device, not the main build worker.
-- Do not parallelize competing agents editing the same codepaths/branches.
+**Exactly two coding-agent entry points on the Arch PC:**
 
-### Google AI Pro / Gemini / Gemini CLI / Jules (independent second agent)
-- Gemini: independent architecture alternatives, shader/performance analysis, documentation review, read-only safety audit, build log diagnosis.
-- Gemini CLI / Code Assist: IDE or terminal-assisted file review/coding **when account access supports it**. Avoid repeating token-intensive context in huge chats; use concise issue-specific state.
-- Jules: separate GitHub issue/branch for independent review or isolated tests if enabled. Never silently merge or edit an actively assigned Codex branch.
-- NotebookLM: optional research notebook for Mesa docs, compositor design, OS reference manuals and UI accessibility research. Upload redacted docs only. Google Drive can hold references, but **not replace GitHub** as source of truth.
+1. **Codex CLI (`codex`), primary:** one scoped Rust/OS implementation, testing or documentation assignment per handoff. High reasoning if selectable; otherwise use the strongest actually offered option. Avoid simultaneous conflicting edits. No Codex Cloud.
+2. **Google Antigravity CLI (`agy`), secondary:** read-only architecture/security/performance audit or an explicitly assigned independent task. Use a high-thinking model when available for complex analysis and an available fast model for routine audits. No Gemini CLI, Jules, Code Assist or Antigravity graphical editor.
+3. **ChatGPT (this conversation), orchestration only:** ask owner for each component's visual design before writing implementation prompts, choose Codex/AGY and available mode, prepare one paste-ready task, then review actual terminal logs and GitHub changes supplied by user before issuing any further task.
 
-### Handoff protocol
-1. GitHub issue lists exact scope, stage, protected paths and reproducible acceptance tests.
-2. One implementing agent opens branch/PR; other agent may review evidence read-only.
-3. Required structured handoff: base SHA, head SHA, paths changed, rationale, exact tests, artifacts, pass/fail evidence, hardware run/not run, performance deltas, remaining risks.
-4. ChatGPT compares claimed results to diff/test logs and flags hypotheses; after user reviews, choose **only one next task**.
-5. Sensitive host logs, secrets, personal identifiers, access tokens, paid account credentials and raw system paths are never copied into public repository/AI prompts.
+**Shared state and reproducibility:** GitHub issue/branch, baseline commit SHA, verified tests and project requirements in `AGENTS.md` and `docs/AI-DESIGN-AND-IMPLEMENTATION-WORKFLOW.md`. One implementing agent writes per branch, the other audits read-only. Prompt must state exact authorization and stop conditions; never silently merge or promote a milestone.
+
+**Physical resource limits:** inference may be remote but the CLI terminal tools and local builds consume RAM/CPU on an i3-2100/4 GB/HDD system. Prefer staged builds, conservative Rust compilation parallelism, and optional GitHub Actions build/test runners while keeping actual target-device acceptance on the PC. Never turn hosted CI into an unrelated coding agent.
+
+**No user hand-coding required.** Only copy provided CLI prompts, return summaries/evidence and give explicit approval for sensitive system operations. Do not paste raw private audit transcripts/credentials into public GitHub.
 
 ## Rust-first editor choice for the physical PC
 
 - **Helix** is the safest fast local editor: Rust terminal editor with LSP/Tree-sitter; highly compatible with older integrated graphics because it uses terminal rendering.
 - **Lapce** is the closest native Rust GUI alternative to VS Code, but it uses Floem/wgpu and may fail or use software graphics on old Intel without Vulkan. Test startup, GPU selection, latency, RAM, CPU and text editing before adopting. This is a *trial*, not a guaranteed speed upgrade.
 - **Zed** depends on Vulkan for effective GUI rendering on Linux; given no verified Intel hardware Vulkan, exclude from default workstation setup.
-- Main code can be produced entirely through GitHub-connected AI agents and Codex Cloud; user should not be required to hand-code to progress.
+- Main code is implemented by the approved PC-local Codex CLI or AGY CLI with GitHub commits; the user should not be required to hand-code.
 
 ## Non-negotiable safety promises
 
