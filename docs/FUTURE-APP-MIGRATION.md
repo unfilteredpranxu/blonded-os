@@ -1,5 +1,7 @@
 # Blonded OS — Future Rust-first application and service migration policy
 
+> **ACTIVE STRATEGY (2026-11-15):** In-place replacement on current Arch, not a bootable separate image. Historical references below to an independent bootable OS should be read as a fully tested, reversible Blonded user session with verified rollback. Do not uninstall anything while developing.
+
 **Status:** Product requirement only. Do NOT execute during M00 or modify the user's current Arch desktop. This is a future phase after Blonded OS has an independent, bootable, tested, recoverable session.
 
 ## Goal
