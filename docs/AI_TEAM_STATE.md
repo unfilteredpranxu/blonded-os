@@ -18,7 +18,7 @@
 - **Protected:** existing Arch/Hyprland functioning session, installed packages, boot/disks/services. No ISO or reinstall. No installs/autostart/live configuration changes without separate approval and proven recovery.
 - **Latest completed work:** M00 feasibility audit and sanitized physical-host findings; comprehensive future UI, app-migration, roadmap, and CLI-only workflow specifications on this branch. Check Git log for **exact** latest SHAs.
 - **Outstanding:** confirm available local CLI versions/model/modes; M00 safe fallback/clean idle baseline incomplete; compositor decision not approved. These do not prevent repo-only M01-A.
-- **Next allowed step:** ChatGPT gives one Codex CLI High (if available) prompt for M01-A Rust config/profile core on a new task branch based on this review branch. No separate image, actual theme GUI or live host changes; then stop for review.
+- **Next allowed step:** ChatGPT gives one Codex CLI High (if available) prompt for M01-A original Rust window-management state machine on a new task branch based on this review branch. No GUI, actual live host changes or new ISO; then stop for review.
 - **Last checkpoint writer:** ChatGPT, 2026-11-15; this file is a requirements/status snapshot, **not** proof of a hardware test or compiled OS.
 
 **Handoff rule:** After assigned work, update owner/status/branch/commit/tests/blockers here (keep <=80 lines), optionally add `docs/ai-handoffs/<TASK-ID>-<agent>.md`, commit on task branch, and stop for review. No hidden shared AI memory, no task continuation unless assigned.
