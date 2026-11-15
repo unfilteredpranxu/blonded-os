@@ -1,0 +1,9 @@
+[package]
+name = "blonded-wm"
+version.workspace = true
+edition.workspace = true
+publish = false
+description = "Original headless window-management policy for Blonded OS"
+
+[lints]
+workspace = true

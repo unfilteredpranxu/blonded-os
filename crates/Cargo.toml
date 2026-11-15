@@ -1,5 +1,5 @@
 [workspace]
-members = ["blonded-core", "blonded-session"]
+members = ["blonded-core", "blonded-session", "blonded-wm"]
 resolver = "2"
 
 [workspace.package]
