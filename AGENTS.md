@@ -11,7 +11,7 @@ Blonded OS is a **Rust-first system/desktop replacement layer built in-place on 
 
 ## Milestone boundary: M00 partly complete; M01-A isolated Rust coding permitted
 1. Read `docs/audits/M00-host-facts.md` and `codex/M00-NEXT-TASK.md`.
-2. M00 graphics evidence exists; safe M01-A **repo-only** Rust profile/config engine development is now permitted. Do not launch/replace the current WM/compositor, change installed services, implement the GUI, installer, ISO or move beyond explicitly assigned M01-A.
+2. M00 graphics evidence exists; safe M01-A **repo-only original Rust window-manager core** is now permitted: windows/focus/manual move-resize/tiling/workspaces and tests. This is NOT a theme/configuration-first project. Do not launch/replace the current WM/compositor, change installed services, implement the GUI, installer, ISO or move beyond explicitly assigned M01-A.
 3. **Approved coding execution is PC-local Codex CLI and AGY CLI only.** The target PC can supply genuine hardware evidence, but distinguish current host measurements from historical audit snapshots and any optional CI runners. Do not use Codex Cloud or Gemini CLI/Jules.
 4. Intel HD 2000 Vulkan acceleration is not established: report showed **llvmpipe CPU Vulkan**.
 5. **Newer real-host evidence confirms Intel HD Graphics 2000 accelerated OpenGL 3.3, GLES 3.0 and EGL 1.5.** See `docs/audits/M00-C-graphics-evidence-2026-11-13.md`. Custom compositor frame timing, RAM and blur remain unknown.
