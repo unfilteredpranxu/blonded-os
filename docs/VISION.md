@@ -1,5 +1,7 @@
 # Product vision
 
+> **Owner's active strategy:** Existing Arch Linux is the base. Blonded OS is built directly on it, gradually replacing its desktop experience with an independent Rust-first implementation. No separate ISO/reinstall is planned. See `docs/IN-PLACE-ARCH-STRATEGY.md`.
+
 Blonded OS is a personal, mood-adaptive Linux OS distribution with a Rust-first visual environment. It should be infinitely extendable in principle through new code and declarative themes, without treating every new visual style as a separate OS installation.
 
 ## Visual freedom
