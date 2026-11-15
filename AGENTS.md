@@ -1,5 +1,9 @@
 # AI engineering rules — Blonded OS
 
+## Required cross-agent startup (Codex CLI and AGY CLI)
+
+Read `docs/AI_TEAM_STATE.md` **first**, then this file, then `docs/AI-TEAM-PROTOCOL.md` only if this is a new task or handoff. Confirm current branch/HEAD and `git status --short`; only inspect assigned issue and task-relevant files. The shared checkpoint + Git history, not prior chat transcripts, are authoritative records of what the other AI did. Do not run broad repository re-audits or print full logs just to build context. After an assigned task, checkpoint the outcome with exact commits/tests and STOP for ChatGPT/owner review. Do not work on `main` assuming unmerged audit-branch docs exist there.
+
 ## Scope
 Blonded OS is an operating-system **distribution** engineering project, not a reskin of an existing desktop. Ultimate deliverable: bootable Arch-derived ISO, installed OS, package/update strategy, recovery, and a Rust-first custom desktop stack.
 
