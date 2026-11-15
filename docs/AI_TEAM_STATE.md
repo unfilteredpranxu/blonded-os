@@ -6,7 +6,7 @@
 - **Canonical repo:** `unfilteredpranxu/blonded-os`.
 - **Working branch for current documentation:** `codex/m00-issue-1-audit-20261112`; **not yet merged to `main`**. Check local branch + HEAD before acting.
 - **Milestone:** M00 physical GPU evidence complete; memory/recovery/FPS tests remain open and block deployment. **M01-A original Rust window manager core (manual floating/move/resize, focus, tiling, workspaces) is the next authorized coding step**, prior to themes. No live compositor, new ISO, installer, boot changes, service changes or system package removal.
-- **Issue:** https://github.com/unfilteredpranxu/blonded-os/issues/1
+- **Active coding issue:** https://github.com/unfilteredpranxu/blonded-os/issues/2 (M01-A original Rust WM core). Hardware-audit issue: https://github.com/unfilteredpranxu/blonded-os/issues/1.
 - **Current task owner:** none; waiting for owner/ChatGPT task selection.
 - **Assignment status:** `READY FOR M01-A` — owner approved beginning development on existing Arch, restricted to safe repo-only Rust source and tests. Await one task prompt; no auto-advance.
 - **Agents:** Codex CLI (PC-local default writer); AGY CLI (PC-local reviewer / separately assigned writer); ChatGPT chooses per-task AI and mode. No Codex Cloud, Jules or Gemini CLI.
