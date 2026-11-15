@@ -3,10 +3,10 @@
 **Strategy decision (2026-11-15):** Owner explicitly rejected a new ISO/installer. Build the Rust-first Blonded desktop **on the existing Arch installation**, then gradually adopt it as a selectable/replaceable desktop session after non-destructive testing. Existing Arch kernel/drivers/pacman remain the system base. Preserve Hyprland and user files.
 
 - **M00 — PARTIAL / OPEN:** real physical GPU acceleration confirmed (Intel OpenGL 3.3/GLES 3.0/EGL 1.5). Clean system memory, fallbacks and frame benchmarks remain unverified. These gate **deployment**, but don't prevent coding isolated Rust tools.
-- **M01-A — NEXT:** implement/test a real Rust-native Blonded profile/configuration engine in repo, no UI and no system installs; store sample desktop profiles and safe dry-run activation. Do not modify current Hyprland configuration. Owner design preferences are required later for UI surfaces.
-- **M01-B:** local, user-owned development launcher + diagnostic lifecycle (explicit invocation only, no autostart) once M01-A evidence is reviewed.
-- **M02:** prototype native window/surface interaction in a safe nested or isolated test environment; never replace the active desktop as a first test.
-- **M03:** Rust window management and compositor vertical slice, benchmarked on physical Intel HD 2000; keep current Hyprland fallback available.
+- **M01-A — NEXT:** implement a **real, original Rust window-management state machine** (not a theme/config app): dynamic window registration/removal, focus/raise, move and resize, minimize/maximize, floating and manual tile/snap layouts, workspaces, constraints and deterministic event dispatch; test geometry and invariants. In-repo user-space only. This is the WM **core**, not yet a live compositor.
+- **M01-B:** connect the original WM core to a **nested Rust Wayland compositor** (Smithay candidate, actual backend to be verified), accept real test client windows inside an isolated window, and exercise input/focus/drag/resize without touching Hyprland's window management.
+- **M02:** extend nested compositor/surface protocol correctness, window lifecycle and input ergonomics; measure Intel GL/GLES rendering feasibility, memory and hardware capability. No host session replacement.
+- **M03:** stable native Rust window manager/compositor vertical slice with working manual floating/tiling/snapping/workspaces; only after nested tests, consider reversible optional session integration. Keep Hyprland fallback.
 - **M04:** efficient compositing, opacity, blur, shadows, animation timing, input stability, safe fallback.
 - **M05:** configurable Rust shell: bars, docks, app launcher, widgets, notifications, settings, keyboard dispatch.
 - **M06:** Rust animated wallpaper/scene engine with low-resolution adaptive effects.
