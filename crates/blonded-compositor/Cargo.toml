@@ -1,0 +1,34 @@
+[package]
+name = "blonded-compositor"
+version.workspace = true
+edition.workspace = true
+publish = false
+description = "Manually launched nested Wayland compositor proof for Blonded OS"
+
+[dependencies]
+blonded-wm = { path = "../blonded-wm" }
+smithay = { version = "=0.7.0", default-features = false, features = ["backend_winit", "wayland_frontend", "desktop"] }
+calloop = { version = "0.14", features = ["signals"] }
+winit = { version = "0.30", default-features = false, features = ["wayland", "wayland-dlopen", "rwh_06"] }
+tempfile = "3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+wayland-client = "0.31"
+wayland-protocols = { version = "0.32", features = ["client"] }
+
+[dev-dependencies]
+# Winit's separate loop uses this already-locked version. Reproduce its warning
+# without conflating it with Smithay/Blonded's Calloop 0.14 event loop.
+calloop-legacy = { package = "calloop", version = "=0.13.0" }
+log = "0.4"
+tracing = "0.1"
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "blonded-compositor"
+path = "src/main.rs"
+
+[[bin]]
+name = "blonded-smoke-client"
+path = "src/bin/smoke_client.rs"
