@@ -1,5 +1,7 @@
 # Proposed Blonded OS architecture (not finalized)
 
+> **ACTIVE APPROACH (2026-11-15):** Build in-place on existing Arch, not a standalone distribution/ISO. Distribution/installer concepts below are historical options, **not** current deliverables. See `docs/IN-PLACE-ARCH-STRATEGY.md` and `docs/ROADMAP.md` for current decisions. Start with repo-only Rust profile/config core and preserve Hyprland fallback.
+
 1. **Linux foundation:** kernel, firmware, drivers, systemd, filesystems, networking, ALSA/PipeWire and packaging, as shipped by Arch-compatible infrastructure.
 2. **Distribution layer:** reproducible ArchISO profile, signed/installable packages, safe update strategy, installer and recovery path.
 3. **Rust windowing:** candidate X11-based custom WM via Penrose/x11rb and optional Rust compositor; compare Smithay Wayland route only after actual GPU capability tests.
