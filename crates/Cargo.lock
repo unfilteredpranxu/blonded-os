@@ -123,9 +123,12 @@ name = "blonded-compositor"
 version = "0.0.1"
 dependencies = [
  "blonded-wm",
+ "calloop 0.13.0",
  "calloop 0.14.5",
+ "log",
  "smithay",
  "tempfile",
+ "tracing",
  "tracing-subscriber",
  "wayland-client",
  "wayland-protocols",

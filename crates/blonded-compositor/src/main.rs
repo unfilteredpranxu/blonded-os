@@ -1,6 +1,8 @@
 //! M01-B: a manually launched Wayland application, never a host session backend.
 mod handlers;
 mod input;
+#[cfg(test)]
+mod lifecycle_tests;
 mod policy;
 mod state;
 
@@ -193,10 +195,8 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
                 let actual_size = backend.borrow().window_size();
                 state.resize_output(actual_size, &output);
                 let mut backend = backend.borrow_mut();
-                if let Some(timer) = state.frame_timer.take() { state.handle.remove(timer); }
-                state.frame_scheduled = false;
+                state.begin_frame();
                 if state.policy.output_suspended { return; }
-                state.last_frame = std::time::Instant::now();
                 state.flush_pointer();
                 if state.policy.dragging() {
                     if let Err(error) = state.policy.flush_motion() { state.fail(error); return; }
@@ -288,6 +288,9 @@ fn run(options: Options) -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(())
     })();
+    // Cleanup must not schedule more frames, including after a dispatch error.
+    state.running = false;
+    state.frame_scheduled = false;
     for entry in &state.managed {
         if let Some(top) = entry.window.toplevel() {
             top.send_close();

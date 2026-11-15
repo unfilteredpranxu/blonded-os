@@ -116,16 +116,32 @@ impl State {
         self.running = false;
     }
 
-    /// One pending frame timer, no idle redraw loop and no permanent timer.
+    /// One finite timer owns its registration until its callback returns Drop.
+    /// A spontaneous redraw cancels demand, not the source: Calloop may already
+    /// have copied that timer's readiness into the current dispatch batch.
     pub fn schedule_frame(&mut self) {
-        if self.frame_scheduled || self.policy.output_suspended {
+        if self.frame_scheduled || self.policy.output_suspended || !self.running {
             return;
         }
         self.frame_scheduled = true;
+        if self.frame_timer.is_some() {
+            return; // reuse a retiring timer; its callback checks the new deadline
+        }
         let delay = Duration::from_millis(16).saturating_sub(self.last_frame.elapsed());
         match self
             .handle
             .insert_source(Timer::from_duration(delay), |_, _, state| {
+                if !state.frame_scheduled || !state.running || state.policy.output_suspended {
+                    state.frame_scheduled = false;
+                    state.frame_timer = None;
+                    return TimeoutAction::Drop;
+                }
+                // An early host redraw may have moved the pacing deadline while
+                // this registration was still pending. Reuse it, never overlap.
+                let deadline = state.last_frame + Duration::from_millis(16);
+                if Instant::now() < deadline {
+                    return TimeoutAction::ToInstant(deadline);
+                }
                 state.frame_timer = None;
                 (state.request_redraw)();
                 TimeoutAction::Drop
@@ -133,6 +149,13 @@ impl State {
             Ok(token) => self.frame_timer = Some(token),
             Err(error) => self.fail(error),
         }
+    }
+
+    pub fn begin_frame(&mut self) {
+        self.frame_scheduled = false;
+        self.last_frame = Instant::now();
+        // Leave a pending timer registered. It will drop without redrawing if
+        // no fresh demand arrives, or serve that demand at the new deadline.
     }
 
     pub fn resize_output(&mut self, size: Size<i32, Physical>, output: &smithay::output::Output) {

@@ -1,5 +1,14 @@
 # Blonded nested compositor — M01-B
 
+M01-B-R2: frame timers now retire in their own callbacks when a host redraw arrives
+early; fresh demand reuses the pending timer. This avoids the owned Calloop 0.14
+same-batch removal race while keeping demand rendering. The reported slot-3
+**non-existence** warning belongs to Winit's separate Calloop 0.13 keyboard-repeat
+loop and is reproduced as benign stale-generation rejection; it can still occur.
+WARN logging is unchanged. See
+[`M01-B-R2-event-source-lifecycle.md`](../../docs/audits/M01-B-R2-event-source-lifecycle.md)
+for source mapping, 40 passing tests and the real-client smoke result.
+
 M01-B-R1 update (2026-11-15): keyboard geometry arithmetic now saturates moves
 and uses clamped 64-bit sums for dimensions before passing requests to the WM.
 Output resizing accepts every size satisfying the current WM minimum and gaps

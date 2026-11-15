@@ -15,6 +15,13 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 wayland-client = "0.31"
 wayland-protocols = { version = "0.32", features = ["client"] }
 
+[dev-dependencies]
+# Winit's separate loop uses this already-locked version. Reproduce its warning
+# without conflating it with Smithay/Blonded's Calloop 0.14 event loop.
+calloop-legacy = { package = "calloop", version = "=0.13.0" }
+log = "0.4"
+tracing = "0.1"
+
 [lints]
 workspace = true
 
