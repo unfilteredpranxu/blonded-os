@@ -10,6 +10,7 @@
 - **Current task owner:** none; waiting for owner/ChatGPT task selection.
 - **Assignment status:** `IDLE / REVIEW_PENDING` — existing documentation and physical host probes reviewed conversationally; no implementation authorized.
 - **Agents:** Codex CLI (PC-local default writer); AGY CLI (PC-local reviewer / separately assigned writer); ChatGPT chooses per-task AI and mode. No Codex Cloud, Jules or Gemini CLI.
+- **Autonomy preference:** owner pastes one prompt and wants no routine approvals. Use protected Codex `--sandbox workspace-write --ask-for-approval never` or AGY `--mode=auto` when supported; consult `docs/HANDS-OFF-CLI-AUTONOMY.md`. Denied/high-risk actions: record `BLOCKED`, never bypass sandbox or interrupt for routine approvals.
 - **Host:** Intel i3-2100 / 4GB / HDD / Intel HD 2000, 1366x768@59.79Hz. Intel GLX accelerated **yes**, OpenGL 3.3, GLES 3.0, EGL 1.5. Earlier Vulkan llvmpipe software. No proven compositor blur/FPS. Current kernel last reported `7.3.4-arch1-1`.
 - **Performance gate:** <=500 MiB **whole-system** steady desktop idle **NOT TESTED**; existing >2GB sample contains actively running user apps.
 - **Boot:** previous ~91.8s to graphical target; Docker service +21.934s on critical userspace path after NetworkManager wait-online +7.566s. Kernel phase ~44.9s previously; cause unverified. No service changes authorized.
