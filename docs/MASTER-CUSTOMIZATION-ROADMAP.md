@@ -1,6 +1,6 @@
 # Blonded OS — Master 100%-customization development blueprint
 
-> **STRATEGY OVERRIDE (2026-11-15):** Owner rejected a new ISO/reinstallation. Historical ISO/installer roadmap items below are superseded by the ACTIVE `docs/ROADMAP.md` and `docs/IN-PLACE-ARCH-STRATEGY.md`. Build native Rust desktop/system components on current Arch, keep Hyprland safe and use reversible user-space integration. Do not implement any ISO, installer or separate OS image.
+> **STRATEGY OVERRIDE (2026-11-15):** Owner rejected a new ISO/reinstallation and specifically prioritized an **original Rust manual window manager/compositor before theme UI**. Historical ISO/installer/config-first steps below are superseded by the ACTIVE `docs/ROADMAP.md` and `docs/IN-PLACE-ARCH-STRATEGY.md`. Build native Rust desktop/system components on current Arch, keep Hyprland safe and use reversible user-space integration. Do not implement any ISO, installer or separate OS image.
 
 **Status:** Long-term architectural blueprint, **NOT** authorization to implement stages beyond M00. The official sequential milestone assignments are in `docs/ROADMAP.md`; this document expands them without skipping stage gates.
 
